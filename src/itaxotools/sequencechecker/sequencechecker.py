@@ -18,8 +18,6 @@ def main() -> None:
     ui_file = QFile(str(Path(__file__).with_name("sequencechecker.ui")))
     ui_file.open(QFile.ReadOnly)
     win = loader.load(ui_file)
-    baz_btn = win.findChild(QPushButton, "baz_btn")
-    baz_btn.clicked.connect(say_hello)
     ui_file.close()
     win.show()
     sys.exit(app.exec_())
