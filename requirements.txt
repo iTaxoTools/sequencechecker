@@ -1,0 +1,7 @@
+pip==21.3.1
+pkg_resources==0.0.0
+PySide6==6.2.2.1
+sequencechecker==0.1.0
+setuptools==59.2.0
+shiboken6==6.2.2.1
+wheel==0.37.0

@@ -12,65 +12,50 @@ import pathlib
 here = pathlib.Path(__file__).parent.resolve()
 
 # Get the long description from the README file
-long_description = (here / 'README.md').read_text(encoding='utf-8')
+long_description = (here / "README.md").read_text(encoding="utf-8")
 
 setup(
-    name='sequencechecker',
-
-    version='0.1.0',
-
-    description='sequencechecker description',
-
+    name="sequencechecker",
+    version="0.1.0",
+    description="sequencechecker description",
     long_description=long_description,
-
-    long_description_content_type='text/markdown',
-
-    url='https://github.com/iTaxoTools/sequencechecker/',
-
-    author='Vladimir Kharchev',
-
+    long_description_content_type="text/markdown",
+    url="https://github.com/iTaxoTools/sequencechecker/",
+    author="Vladimir Kharchev",
     # Classifiers help users find your project by categorizing it.
     #
     # For a list of valid classifiers, see https://pypi.org/classifiers/
     classifiers=[  # Optional
-        'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
-
+        "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
         # Specify the Python versions you support here. In particular, ensure
         # that you indicate you support Python 3. These classifiers are *not*
         # checked by 'pip install'. See instead 'python_requires' below.
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.9',
-        'Programming Language :: Python :: 3 :: Only',
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3 :: Only",
     ],
-
-    package_dir={'': 'src'},
-
+    package_dir={"": "src"},
     packages=find_namespace_packages(
         # exclude=('itaxotools.common*',),
-        include=('itaxotools*',),
-        where='src',
+        include=("itaxotools*",),
+        where="src",
     ),
-
-    python_requires='>=3.9, <4',
-
+    python_requires=">=3.9, <4",
     install_requires=[
+        "pyside6>=6.1.1, <6.2.0",
     ],
-
     extras_require={
-        'dev': ['pyinstaller'],
+        "dev": ["pyinstaller"],
     },
-
     # Include all data from MANIFEST.in
     include_package_data=True,
-
     entry_points={
-        'console_scripts': [
-            'sequencechecker=itaxotools.sequencechecker:main',
+        "console_scripts": [
+            "sequencechecker=itaxotools.sequencechecker:main",
         ],
-        'pyinstaller40': [
-            'hook-dirs = itaxotools.__pyinstaller:get_hook_dirs',
-            'tests = itaxotools.__pyinstaller:get_pyinstaller_tests'
-        ]
+        "pyinstaller40": [
+            "hook-dirs = itaxotools.__pyinstaller:get_hook_dirs",
+            "tests = itaxotools.__pyinstaller:get_pyinstaller_tests",
+        ],
     },
-
 )
