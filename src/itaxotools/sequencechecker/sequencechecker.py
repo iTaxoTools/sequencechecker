@@ -10,6 +10,7 @@ def main() -> None:
     app = QApplication(sys.argv)
     win = SequenceCheckerMainWindow()
     win.show()
+    print(win.options())
     sys.exit(app.exec_())
 
 
