@@ -10,10 +10,14 @@ from PySide6.QtWidgets import (
     QPushButton,
     QCheckBox,
     QListWidget,
+    QListView,
+    QTreeView,
     QFileDialog,
+    QFileSystemModel,
+    QTextBrowser,
 )
 from PySide6.QtGui import QPixmap, QIcon
-from PySide6.QtCore import QFile, Slot
+from PySide6.QtCore import QFile, Slot, QModelIndex, QUrl
 
 import itaxotools.common as common
 import itaxotools.common.resources
@@ -24,12 +28,14 @@ from .path_list_item import PathListItem
 
 
 class SequenceCheckerMainWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self, prewiev_dir: Path):
         super(SequenceCheckerMainWindow, self).__init__()
+        self.preview_dir = prewiev_dir
         self.load_ui()
         self.set_logos_and_icons()
         self.collect_options_checkboxes()
         self.connect_filelist_buttons()
+        self.connect_preview()
         for checkbox in self._options.values():
             checkbox.stateChanged.connect(self.show_options)
 
@@ -100,3 +106,18 @@ class SequenceCheckerMainWindow(QMainWindow):
     @Slot()
     def clear_paths(self) -> None:
         self.filelist.clear()
+
+    def connect_preview(self) -> None:
+        self.preview_model = QFileSystemModel(self)
+        self.text_browser = self.findChild(QTextBrowser, "preview_box")
+        self.preview_model.setRootPath(str(self.preview_dir))
+        files_view = self.findChild(QListView, "files_view")
+        files_view.setModel(self.preview_model)
+        files_view.setRootIndex(self.preview_model.index(str(self.preview_dir)))
+        files_view.selectionModel().currentChanged.connect(self.test_model_connect)
+
+    @Slot(QModelIndex)
+    def test_model_connect(self, index: QModelIndex) -> None:
+        self.text_browser.setSource(
+            QUrl.fromLocalFile(self.preview_model.filePath(index))
+        )
