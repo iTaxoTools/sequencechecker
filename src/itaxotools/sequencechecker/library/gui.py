@@ -3,7 +3,15 @@
 from typing import Dict
 from pathlib import Path
 
-from PySide6.QtWidgets import QMainWindow, QLabel, QToolButton, QCheckBox, QListWidget
+from PySide6.QtWidgets import (
+    QMainWindow,
+    QLabel,
+    QToolButton,
+    QPushButton,
+    QCheckBox,
+    QListWidget,
+    QFileDialog,
+)
 from PySide6.QtGui import QPixmap, QIcon
 from PySide6.QtCore import QFile, Slot
 
@@ -21,11 +29,9 @@ class SequenceCheckerMainWindow(QMainWindow):
         self.load_ui()
         self.set_logos_and_icons()
         self.collect_options_checkboxes()
+        self.connect_filelist_buttons()
         for checkbox in self._options.values():
             checkbox.stateChanged.connect(self.show_options)
-        self.add_path(Path("/tmp/out"))
-        self.add_path(Path("/home/necrosovereign/foobar/foo.txt"))
-        self.add_path(Path("/zoo/squirrel.png"))
 
     @Slot()
     def show_options(self) -> None:
@@ -62,6 +68,35 @@ class SequenceCheckerMainWindow(QMainWindow):
     def options(self) -> Dict[Option, bool]:
         return {option: self._options[option].isChecked() for option in Option}
 
+    def connect_filelist_buttons(self) -> None:
+        self.filelist = self.findChild(QListWidget, "filelist_widget")
+        self.findChild(QPushButton, "file_btn").clicked.connect(self.add_file_path)
+        self.findChild(QPushButton, "dir_btn").clicked.connect(self.add_dir_path)
+        self.findChild(QPushButton, "file_rm_btn").clicked.connect(
+            self.clear_selected_paths
+        )
+        self.findChild(QPushButton, "files_clear_btn").clicked.connect(self.clear_paths)
+
     def add_path(self, path: Path) -> None:
-        file_list = self.findChild(QListWidget, "filelist_widget")
-        PathListItem(path, file_list)
+        PathListItem(path, self.filelist)
+
+    @Slot()
+    def add_file_path(self) -> None:
+        file_names, _ = QFileDialog.getOpenFileNames(self)
+        for file_name in file_names:
+            self.add_path(Path(file_name))
+
+    @Slot()
+    def add_dir_path(self) -> None:
+        dir_name = QFileDialog.getExistingDirectory()
+        if dir_name:
+            self.add_path(Path(dir_name))
+
+    @Slot()
+    def clear_selected_paths(self) -> None:
+        for item in self.filelist.selectedItems():
+            self.filelist.takeItem(self.filelist.row(item))
+
+    @Slot()
+    def clear_paths(self) -> None:
+        self.filelist.clear()
