@@ -3,15 +3,16 @@
 from typing import Dict
 from pathlib import Path
 
-from PySide6.QtWidgets import QMainWindow, QLabel, QToolButton, QCheckBox
+from PySide6.QtWidgets import QMainWindow, QLabel, QToolButton, QCheckBox, QListWidget
 from PySide6.QtGui import QPixmap, QIcon
-from PySide6.QtCore import QFile, Slot, QSize
+from PySide6.QtCore import QFile, Slot
 
 import itaxotools.common as common
 import itaxotools.common.resources
 
 from .ui_loader import load_ui
 from .options import Option
+from .path_list_item import PathListItem
 
 
 class SequenceCheckerMainWindow(QMainWindow):
@@ -22,6 +23,9 @@ class SequenceCheckerMainWindow(QMainWindow):
         self.collect_options_checkboxes()
         for checkbox in self._options.values():
             checkbox.stateChanged.connect(self.show_options)
+        self.add_path(Path("/tmp/out"))
+        self.add_path(Path("/home/necrosovereign/foobar/foo.txt"))
+        self.add_path(Path("/zoo/squirrel.png"))
 
     @Slot()
     def show_options(self) -> None:
@@ -57,3 +61,7 @@ class SequenceCheckerMainWindow(QMainWindow):
 
     def options(self) -> Dict[Option, bool]:
         return {option: self._options[option].isChecked() for option in Option}
+
+    def add_path(self, path: Path) -> None:
+        file_list = self.findChild(QListWidget, "filelist_widget")
+        PathListItem(path, file_list)

@@ -292,7 +292,14 @@
                  <number>0</number>
                 </property>
                 <item>
-                 <widget class="QListView" name="listView_2"/>
+                 <widget class="QListWidget" name="filelist_widget">
+                  <property name="editTriggers">
+                   <set>QAbstractItemView::NoEditTriggers</set>
+                  </property>
+                  <property name="selectionMode">
+                   <enum>QAbstractItemView::ExtendedSelection</enum>
+                  </property>
+                 </widget>
                 </item>
                 <item>
                  <widget class="QWidget" name="widget_7" native="true">
@@ -577,7 +584,7 @@
                <number>0</number>
               </property>
               <item row="0" column="0">
-               <widget class="QListView" name="files_view"/>
+               <widget class="QListView" name="files_widget"/>
               </item>
              </layout>
             </widget>
