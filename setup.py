@@ -45,6 +45,7 @@ setup(
         "pyside6>=6.1.1, <6.2.0",
         "itaxotools-common==0.2.2",
         "inputchecker==0.1.0",
+        "pandas",
     ],
     extras_require={
         "dev": ["pyinstaller"],
