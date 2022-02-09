@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from typing import Dict
+from typing import Dict, Iterator, List
 from pathlib import Path
 
 from PySide6.QtWidgets import (
@@ -17,7 +17,7 @@ from PySide6.QtWidgets import (
     QTextBrowser,
 )
 from PySide6.QtGui import QPixmap, QIcon
-from PySide6.QtCore import QFile, Slot, QModelIndex, QUrl
+from PySide6.QtCore import QFile, Slot, QModelIndex, QUrl, Qt
 
 import itaxotools.common as common
 import itaxotools.common.resources
@@ -121,3 +121,7 @@ class SequenceCheckerMainWindow(QMainWindow):
         self.text_browser.setSource(
             QUrl.fromLocalFile(self.preview_model.filePath(index))
         )
+
+    def input_paths(self) -> Iterator[Path]:
+        for item in self.filelist.findItems("*", Qt.MatchWildcard):
+            yield from item.paths()
