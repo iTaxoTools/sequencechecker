@@ -2,6 +2,7 @@
 
 from typing import Dict, Iterator, List
 from pathlib import Path
+import shutil
 
 from PySide6.QtWidgets import (
     QMainWindow,
@@ -38,6 +39,8 @@ class SequenceCheckerMainWindow(QMainWindow):
         self.connect_filelist_buttons()
         self.connect_preview()
         self.findChild(QPushButton, "analyze_btn").clicked.connect(self.analyze)
+        self.findChild(QToolButton, "save_btn").clicked.connect(self.save_file)
+        self.findChild(QToolButton, "save_all_btn").clicked.connect(self.save_all)
 
     @Slot()
     def show_options(self) -> None:
@@ -114,10 +117,10 @@ class SequenceCheckerMainWindow(QMainWindow):
         files_view = self.findChild(QListView, "files_view")
         files_view.setModel(self.preview_model)
         files_view.setRootIndex(self.preview_model.index(str(self.preview_dir)))
-        files_view.selectionModel().currentChanged.connect(self.test_model_connect)
+        files_view.selectionModel().currentChanged.connect(self.view_file_at_index)
 
     @Slot(QModelIndex)
-    def test_model_connect(self, index: QModelIndex) -> None:
+    def view_file_at_index(self, index: QModelIndex) -> None:
         self.text_browser.setPlainText(
             Path(self.preview_model.filePath(index)).read_text()
         )
@@ -130,3 +133,21 @@ class SequenceCheckerMainWindow(QMainWindow):
     def analyze(self) -> None:
         with open(self.preview_dir / "summary.txt", mode="w") as summary_file:
             make_summary(self.input_paths()).to_csv(summary_file, sep="\t", index=False)
+
+    @Slot()
+    def save_file(self) -> None:
+        file_index = self.files_view.selectionModel().currentIndex()
+        if not file_index.isValid():
+            return
+        save_path, _ = QFileDialog.getSaveFileName()
+        if save_path:
+            shutil.copy(self.preview_model.filePath(file_index), save_path)
+
+    @Slot()
+    def save_all(self) -> None:
+        save_path = QFileDialog.getExistingDirectory()
+        if not save_path:
+            return
+        for file in self.preview_dir.iterdir():
+            if file.is_file():
+                shutil.copy(file, save_path)
