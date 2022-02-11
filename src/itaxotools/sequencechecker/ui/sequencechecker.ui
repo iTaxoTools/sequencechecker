@@ -610,7 +610,14 @@
                <number>0</number>
               </property>
               <item row="0" column="0">
-               <widget class="QTextBrowser" name="preview_box"/>
+               <widget class="QPlainTextEdit" name="preview_box">
+                <property name="lineWrapMode">
+                 <enum>QPlainTextEdit::NoWrap</enum>
+                </property>
+                <property name="readOnly">
+                 <bool>true</bool>
+                </property>
+               </widget>
               </item>
              </layout>
             </widget>

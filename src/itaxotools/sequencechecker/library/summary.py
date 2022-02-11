@@ -25,11 +25,12 @@ def file_summary(filepath: Path) -> Tuple[str, str, int]:
         FileChecker()
         .check_filetype(filepath, filetype)
         .count_sequences(filepath, filetype)
+        .messages
     )
     if InvalidFileType(filetype) in messages:
         return filepath.name, "", 0
-    seq_count, _ = messages
-    return filepath.name, filetype, seq_count.count
+    seq_count, *_ = messages
+    return filepath.name, filetype.name, seq_count.count
 
 
 def make_summary(files: Iterator[Path]) -> pd.DataFrame:

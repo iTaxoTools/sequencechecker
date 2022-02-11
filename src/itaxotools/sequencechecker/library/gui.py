@@ -14,9 +14,9 @@ from PySide6.QtWidgets import (
     QTreeView,
     QFileDialog,
     QFileSystemModel,
-    QTextBrowser,
+    QPlainTextEdit,
 )
-from PySide6.QtGui import QPixmap, QIcon
+from PySide6.QtGui import QPixmap, QIcon, QTextDocument
 from PySide6.QtCore import QFile, Slot, QModelIndex, QUrl, Qt
 
 import itaxotools.common as common
@@ -25,6 +25,7 @@ import itaxotools.common.resources
 from .ui_loader import load_ui
 from .options import Option
 from .path_list_item import PathListItem
+from .summary import make_summary
 
 
 class SequenceCheckerMainWindow(QMainWindow):
@@ -36,8 +37,7 @@ class SequenceCheckerMainWindow(QMainWindow):
         self.collect_options_checkboxes()
         self.connect_filelist_buttons()
         self.connect_preview()
-        for checkbox in self._options.values():
-            checkbox.stateChanged.connect(self.show_options)
+        self.findChild(QPushButton, "analyze_btn").clicked.connect(self.analyze)
 
     @Slot()
     def show_options(self) -> None:
@@ -109,7 +109,7 @@ class SequenceCheckerMainWindow(QMainWindow):
 
     def connect_preview(self) -> None:
         self.preview_model = QFileSystemModel(self)
-        self.text_browser = self.findChild(QTextBrowser, "preview_box")
+        self.text_browser = self.findChild(QPlainTextEdit, "preview_box")
         self.preview_model.setRootPath(str(self.preview_dir))
         files_view = self.findChild(QListView, "files_view")
         files_view.setModel(self.preview_model)
@@ -118,10 +118,15 @@ class SequenceCheckerMainWindow(QMainWindow):
 
     @Slot(QModelIndex)
     def test_model_connect(self, index: QModelIndex) -> None:
-        self.text_browser.setSource(
-            QUrl.fromLocalFile(self.preview_model.filePath(index))
+        self.text_browser.setPlainText(
+            Path(self.preview_model.filePath(index)).read_text()
         )
 
     def input_paths(self) -> Iterator[Path]:
         for item in self.filelist.findItems("*", Qt.MatchWildcard):
             yield from item.paths()
+
+    @Slot()
+    def analyze(self) -> None:
+        with open(self.preview_dir / "summary.txt", mode="w") as summary_file:
+            make_summary(self.input_paths()).to_csv(summary_file, sep="\t", index=False)
