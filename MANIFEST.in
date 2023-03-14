@@ -11,3 +11,4 @@ include setup.py
 
 # Recursively include all common resources
 recursive-include src/itaxotools/**/resources *
+recursive-include src/itaxotools/sequencechecker/ui *
