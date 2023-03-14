@@ -47,12 +47,8 @@ class SequenceCheckerMainWindow(QMainWindow):
         print(self.options())
 
     def load_ui(self) -> None:
-        ui_file = QFile(
-            common.resources.get("itaxotools.sequencechecker", "ui/sequencechecker.ui")
-        )
-        ui_file.open(QFile.ReadOnly)
+        ui_file = common.resources.get("itaxotools.sequencechecker", "ui/sequencechecker.ui")
         load_ui(ui_file, self)
-        ui_file.close()
 
     def set_logos_and_icons(self):
         logo_label = self.findChild(QLabel, "Logo")
